@@ -1,13 +1,12 @@
-import { NextFunction, Request, Response } from "express";
-import productModel from "../models/product";
-import { faker } from "@faker-js/faker";
-import Joi from "joi";
-import BadRequestError from "../error/bad-request-error";
-import NotFoundError from "../error/not-found-error";
+import { NextFunction, Request, Response } from 'express';
+import { faker } from '@faker-js/faker';
+import productModel from '../models/product';
+import BadRequestError from '../error/bad-request-error';
+import NotFoundError from '../error/not-found-error';
 
 enum EPayment {
-  "card",
-  "online",
+  'card',
+  'online',
 }
 interface IOrder {
   items: string[];
@@ -21,7 +20,7 @@ interface IOrder {
 async function validOrder(order: IOrder) {
   let total: number = 0;
   if (order.items.length <= 0) {
-    throw new BadRequestError("Ошибка валидации данных при оформлении заказа");
+    throw new BadRequestError('Ошибка валидации данных при оформлении заказа');
   }
 
   const products = await productModel.find({
@@ -29,18 +28,18 @@ async function validOrder(order: IOrder) {
   });
 
   if (products.length !== order.items.length) {
-    throw new NotFoundError("Ошибка валидации данных при оформлении заказа");
+    throw new NotFoundError('Ошибка валидации данных при оформлении заказа');
   }
-  for (const item of products) {
+  products.forEach((item) => {
     if (item.price === null) {
       throw new BadRequestError(
-        "Ошибка валидации данных при оформлении заказа"
+        'Ошибка валидации данных при оформлении заказа',
       );
     }
     total += item.price as number;
-  }
+  });
   if (total !== order.total) {
-    throw new BadRequestError("Ошибка валидации данных при оформлении заказа");
+    throw new BadRequestError('Ошибка валидации данных при оформлении заказа');
   }
   return true;
 }
@@ -57,7 +56,8 @@ async function validOrder(order: IOrder) {
  *      - total: общая сумма заказа из данных, переданных в запросе.
  *
  * 2. В случае ошибки:
- *    - Ошибка определенного класса передаётся в следующий middleware для централизованной обработки.
+ *    - Ошибка определенного класса передаётся в следующий
+ *      middleware для централизованной обработки.
  *    - **(уточнение: класс ошибки определяется в функции validOrder)**
  *
  * Используемые функции:
@@ -71,7 +71,7 @@ async function validOrder(order: IOrder) {
 export const createOrder = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const order: IOrder = req.body;
 
@@ -85,3 +85,5 @@ export const createOrder = async (
     next(error);
   }
 };
+
+export default createOrder;

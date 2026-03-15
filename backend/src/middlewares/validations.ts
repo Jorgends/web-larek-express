@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from "express";
-import Joi from "joi";
-import BadRequestError from "../error/bad-request-error";
-import mongoose from "mongoose";
+import { Request, Response, NextFunction } from 'express';
+import Joi from 'joi';
+import mongoose from 'mongoose';
+import BadRequestError from '../error/bad-request-error';
 
 const orderSchema = Joi.object({
   items: Joi.array().items(Joi.string().required()).required(),
@@ -19,14 +19,14 @@ const productSchema = Joi.object({
     originalName: Joi.string().required(),
   }).required(),
   category: Joi.string().required(),
-  description: Joi.string().allow("").optional(),
+  description: Joi.string().allow('').optional(),
   price: Joi.number().allow(null),
 });
 
 export const validateOrderBody = (
   req: Request,
-  res: Response,
-  next: NextFunction
+  _res: Response,
+  next: NextFunction,
 ) => {
   const { error } = orderSchema.validate(req.body);
 
@@ -34,42 +34,43 @@ export const validateOrderBody = (
     return next(new BadRequestError(error.message));
   }
 
-  next();
+  return next();
 };
 
 export const validateProductBody = (
   req: Request,
-  res: Response,
-  next: NextFunction
+  _res: Response,
+  next: NextFunction,
 ) => {
   const { error } = productSchema.validate(req.body);
 
   if (error) {
     return next(
-      new BadRequestError("Ошибка валидации данных при создании товара")
+      new BadRequestError('Ошибка валидации данных при создании товара'),
     );
   }
 
-  next();
+  return next();
 };
-
 
 export const validateObjIdArray = (
   req: Request,
-  res: Response,
-  next: NextFunction
+  _res: Response,
+  next: NextFunction,
 ) => {
-  const items = req.body.items;
+  const { items } = req.body;
 
   if (!Array.isArray(items)) {
-    return next(new BadRequestError("Ошибка валидации данных"));
+    return next(new BadRequestError('Ошибка валидации данных'));
   }
 
-  for (const id of items) {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return next(new BadRequestError("Ошибка валидации данных"));
-    }
+  const hasInvalidId = items.some(
+    (item) => !mongoose.Types.ObjectId.isValid(item),
+  );
+
+  if (hasInvalidId) {
+    return next(new BadRequestError('Ошибка валидации данных'));
   }
 
-  next();
+  return next();
 };

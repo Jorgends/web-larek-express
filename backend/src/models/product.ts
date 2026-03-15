@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 type TImage = { fileName: string; originalName: string };
 
@@ -19,8 +19,8 @@ const productSchema = new mongoose.Schema<IProduct>({
     unique: true,
   },
   image: {
-     fileName: {type:String, required: true}, 
-     originalName: {type:String, required: true}
+    fileName: { type: String, required: true },
+    originalName: { type: String, required: true },
   },
   category: {
     type: String,
@@ -35,4 +35,4 @@ const productSchema = new mongoose.Schema<IProduct>({
   },
 });
 
-export default mongoose.model<IProduct>("products", productSchema);
+export default mongoose.model<IProduct>('products', productSchema);

@@ -1,12 +1,12 @@
-import { Request, Response, NextFunction } from "express";
-import { isCelebrateError } from "celebrate";
-import AppError from "../error/app-error";
+import { Request, Response, NextFunction } from 'express';
+import { isCelebrateError } from 'celebrate';
+import AppError from '../error/app-error';
 
-export const errorHandler = (
+const errorHandler = (
   err: Error,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   if (isCelebrateError(err)) {
     return next(err);
@@ -19,6 +19,8 @@ export const errorHandler = (
   }
 
   return res.status(500).json({
-    message: "Ошибка сервера",
+    message: 'Ошибка сервера',
   });
 };
+
+export default errorHandler;

@@ -10,7 +10,7 @@ enum EPayment {
 }
 interface IOrder {
   items: string[];
-  total: number;
+  total: number | null;
   payment: EPayment;
   email: string;
   phone: string;
@@ -19,6 +19,13 @@ interface IOrder {
 
 async function validOrder(order: IOrder) {
   let total: number = 0;
+
+  if (!order.total || !Array.isArray(order.items)) {
+    throw new BadRequestError(
+      'Ошибка валидации данных при оформлении заказа',
+    );
+  }
+
   if (order.items.length <= 0) {
     throw new BadRequestError('Ошибка валидации данных при оформлении заказа');
   }

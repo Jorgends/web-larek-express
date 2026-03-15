@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import mongoose from 'mongoose';
 import productModel from '../models/product';
 import ConflictError from '../error/conflict-error';
 import BadRequestError from '../error/bad-request-error';
@@ -79,20 +78,21 @@ export const createProduct = (
       price: product.price,
     })
     .then(() => {
-      res.status(201).send('ok');
+      res.status(200).send('ok');
     })
     .catch((error) => {
-      if (
-        error instanceof mongoose.mongo.MongoServerError
-        && error.code === 11000
-      ) {
+      if (error.code === 11000) {
         return next(
-          new ConflictError('Ошибка валидации данных при создании товара'),
+          new ConflictError(
+            'Ошибка валидации данных при создании товара',
+          ),
         );
       }
 
       return next(
-        new BadRequestError('Ошибка валидации данных при создании товара'),
+        new BadRequestError(
+          'Ошибка валидации данных при создании товара',
+        ),
       );
     });
 };

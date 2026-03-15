@@ -6,6 +6,7 @@ import { errors } from 'celebrate';
 import orderRoutes from './routes/order';
 import productRoutes from './routes/product';
 import errorHandler from './middlewares/error-handler';
+import { requestLogger, errorLogger } from './middlewares/logger';
 
 const { PORT = 3000 } = process.env;
 
@@ -16,6 +17,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/weblarek');
 app.use(express.static(path.join(__dirname, './public')));
 
 app.use(cors());
+
 app.use('/product', productRoutes);
 app.use('/order', orderRoutes);
 

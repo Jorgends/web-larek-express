@@ -20,7 +20,7 @@ const productSchema = Joi.object({
   }).required(),
   category: Joi.string().required(),
   description: Joi.string().allow('').optional(),
-  price: Joi.number().allow(null),
+  price: Joi.number().allow(null).optional(),
 });
 
 export const validateOrderBody = (

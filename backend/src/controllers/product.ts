@@ -77,8 +77,13 @@ export const createProduct = (
       description: product.description,
       price: product.price,
     })
-    .then(() => {
-      res.status(200).send('ok');
+    .then((createdProduct) => {
+      res.status(201).send({
+        id: createdProduct._id,
+        name: createdProduct.title,
+        price: createdProduct.price,
+        description: createdProduct.description,
+      });
     })
     .catch((error) => {
       if (error.code === 11000) {

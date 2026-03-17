@@ -4,10 +4,13 @@ import productModel from '../models/product';
 import BadRequestError from '../error/bad-request-error';
 import NotFoundError from '../error/not-found-error';
 
+const textError = 'Ошибка валидации данных при оформлении заказа';
+
 enum EPayment {
-  'card',
-  'online',
+  CARD = 'card',
+  ONLINE = 'online',
 }
+
 interface IOrder {
   items: string[];
   total: number | null;
@@ -21,13 +24,15 @@ async function validOrder(order: IOrder) {
   let total: number = 0;
 
   if (!order.total || !Array.isArray(order.items)) {
-    throw new BadRequestError(
-      'Ошибка валидации данных при оформлении заказа',
-    );
+    throw new BadRequestError(textError);
+  }
+
+  if (order.payment !== EPayment.CARD && order.payment !== EPayment.ONLINE) {
+    throw new BadRequestError(textError);
   }
 
   if (order.items.length <= 0) {
-    throw new BadRequestError('Ошибка валидации данных при оформлении заказа');
+    throw new BadRequestError(textError);
   }
 
   const products = await productModel.find({
@@ -35,18 +40,18 @@ async function validOrder(order: IOrder) {
   });
 
   if (products.length !== order.items.length) {
-    throw new NotFoundError('Ошибка валидации данных при оформлении заказа');
+    throw new NotFoundError(textError);
   }
   products.forEach((item) => {
     if (item.price === null) {
       throw new BadRequestError(
-        'Ошибка валидации данных при оформлении заказа',
+        textError,
       );
     }
     total += item.price as number;
   });
   if (total !== order.total) {
-    throw new BadRequestError('Ошибка валидации данных при оформлении заказа');
+    throw new BadRequestError(textError);
   }
   return true;
 }
